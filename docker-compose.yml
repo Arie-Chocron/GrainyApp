@@ -1,5 +1,6 @@
 services:
   api:
+    image: ghcr.io/arie-chocron/grainy-api:latest
     build: ./api
     container_name: grainy-api
     restart: unless-stopped
@@ -15,6 +16,7 @@ services:
       start_period: 5s
 
   web:
+    image: ghcr.io/arie-chocron/grainy-web:latest
     build: ./web
     container_name: grainy-web
     restart: unless-stopped
