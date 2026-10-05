@@ -1,0 +1,74 @@
+name: Deploy API to home VM
+
+on:
+  workflow_run:
+    workflows:
+      - Publish Docker images
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: grainy-api-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    name: Deploy API image to VM
+    runs-on: [self-hosted, linux, x64]
+    environment:
+      name: production
+    timeout-minutes: 10
+    env:
+      IMAGE_TAG: sha-${{ github.event.workflow_run.head_sha }}
+
+    steps:
+      - name: Check out the image source commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Pull and start the exact API image
+        run: |
+          docker compose \
+            --project-name grainy-prod \
+            --file docker-compose.prod.yml \
+            pull
+          docker compose \
+            --project-name grainy-prod \
+            --file docker-compose.prod.yml \
+            up -d --no-build --remove-orphans
+
+      - name: Show the temporary Cloudflare URL
+        run: |
+          for attempt in $(seq 1 30); do
+            tunnel_url="$(
+              docker compose \
+                --project-name grainy-prod \
+                --file docker-compose.prod.yml \
+                logs --no-color cloudflared 2>&1 |
+                grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' |
+                tail -n 1 || true
+            )"
+            if [ -n "$tunnel_url" ]; then
+              echo "Temporary API URL: $tunnel_url"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker compose \
+            --project-name grainy-prod \
+            --file docker-compose.prod.yml \
+            logs --no-color cloudflared
+          echo "Cloudflare Quick Tunnel did not print a URL within 60 seconds." >&2
+          exit 1
