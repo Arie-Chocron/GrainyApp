@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Paleta tomada del personaje */
+:root {
+  --ink: #1f1a1a;      /* línea del dibujo */
+  --sky: #46bff3;      /* pelo */
+  --hoodie: #d1534a;   /* sudadera */
+  --crown: #e9c046;    /* corona */
+  --skin: #f9e3cc;     /* piel */
+  --paper: #eaf7fd;    /* azul muy claro para el fondo */
+
+  /* tokens shadcn */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--skin);
+  --card-foreground: var(--ink);
+  --primary: var(--hoodie);
+  --primary-foreground: #fff;
+  --secondary: var(--sky);
+  --secondary-foreground: var(--ink);
+  --accent: var(--crown);
+  --accent-foreground: var(--ink);
+  --muted: var(--skin);
+  --muted-foreground: #5b4e4e;
+  --destructive: #a3151b;
+  --border: var(--ink);
+  --input: var(--ink);
+  --ring: var(--crown);
+  --radius: 1rem;
+}
+
+@theme inline {
+  --font-sans: "Fredoka Variable", ui-rounded, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-sm: calc(var(--radius) - 8px);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-sans antialiased; }
+}
