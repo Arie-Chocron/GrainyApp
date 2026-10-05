@@ -8,12 +8,13 @@ import grainy from '@/assets/grainy.gif'
 const message = ref('')
 const error = ref('')
 const loading = ref(false)
+const apiBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '')
 
 async function greet() {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch('/api/hello')
+    const res = await fetch(`${apiBaseUrl}/hello`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data: { message: string } = await res.json()
     message.value = data.message
